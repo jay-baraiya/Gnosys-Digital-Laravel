@@ -1,0 +1,621 @@
+/* ================================================================
+   Culture of Change — Matching gnosysdigital.com reference design
+   ================================================================ */
+
+/* ---- Global Resets for this page ---- */
+.coc-section-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0052cc;
+    margin-bottom: 1rem;
+}
+
+.coc-lead-text {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 750px;
+}
+
+.coc-text-muted {
+    color: #666;
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
+
+/* ================================================================
+   SECTION 1: HERO
+   ================================================================ */
+.coc-hero {
+    min-height: 85vh;
+    padding-top: 180px;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgba(0, 18, 51, 0.82), rgba(0, 18, 51, 0.82)),
+        url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')
+        center center / cover no-repeat;
+    background-attachment: scroll;
+    color: #fff;
+    text-align: center;
+}
+
+.coc-hero-subtitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 1rem;
+}
+
+.coc-hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+}
+
+.coc-hero-description {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.85);
+    max-width: 780px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+/* ================================================================
+   SECTION 2: MISSION
+   ================================================================ */
+.coc-mission-section {
+    padding: 100px 0;
+    background: #f7f9fc;
+}
+
+.coc-mission-badge {
+    display: inline-block;
+    background: #e8f0fe;
+    color: #0052cc;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 50px;
+    margin-bottom: 1.2rem;
+}
+
+.coc-divider {
+    width: 60px;
+    height: 4px;
+    background: #0052cc;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+}
+
+.coc-mission-subheading {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0052cc;
+    margin-bottom: 1rem;
+}
+
+.coc-mission-quote {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: #333;
+    line-height: 1.8;
+    border-left: 4px solid #0052cc;
+    padding-left: 1.2rem;
+}
+
+.coc-mission-img {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 82, 204, 0.15);
+    object-fit: cover;
+    max-height: 420px;
+}
+
+/* ================================================================
+   SECTION 3: WHAT WE DO
+   ================================================================ */
+.coc-whatwedo-section {
+    padding: 100px 0;
+    background: #fff;
+}
+
+.coc-service-card {
+    background: #fff;
+    border: 1px solid #e8eef8;
+    border-radius: 16px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    transition: all 0.35s ease;
+    box-shadow: 0 4px 24px rgba(0, 82, 204, 0.06);
+    height: 100%;
+}
+
+.coc-service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 82, 204, 0.14);
+    border-color: #0052cc;
+}
+
+.coc-service-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #0052cc, #003d99);
+    color: #fff;
+    font-size: 1.8rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.coc-service-card:hover .coc-service-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.coc-service-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 1rem;
+}
+
+.coc-service-desc {
+    color: #666;
+    font-size: 0.98rem;
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+.coc-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.coc-btn-primary {
+    background: #0052cc;
+    border: 2px solid #0052cc;
+    color: #fff;
+}
+
+.coc-btn-primary:hover {
+    background: #003d99;
+    border-color: #003d99;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 82, 204, 0.35);
+}
+
+.coc-btn-outline {
+    background: transparent;
+    border: 2px solid #0052cc;
+    color: #0052cc;
+}
+
+.coc-btn-outline:hover {
+    background: #0052cc;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* ================================================================
+   SECTION 4: CULTURE OF CHANGE — Identity List
+   ================================================================ */
+.coc-identity-section {
+    padding: 100px 0;
+    background: #f7f9fc;
+}
+
+.coc-culture-intro {
+    font-size: 1.1rem;
+    color: #333;
+    line-height: 1.85;
+    font-weight: 500;
+}
+
+.coc-identity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.coc-identity-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid #dde6f5;
+}
+
+.coc-identity-list li:last-child {
+    border-bottom: none;
+}
+
+.coc-check-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: #0052cc;
+    color: #fff;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.coc-identity-text {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.7;
+}
+
+.coc-identity-text strong {
+    color: #111;
+}
+
+/* ================================================================
+   SECTION 5: THE GNOSYS WAY
+   ================================================================ */
+.coc-gnosys-way-section {
+    padding: 100px 0;
+    background: #fff;
+}
+
+.coc-way-card {
+    position: relative;
+    padding: 2.5rem 1.5rem;
+    background: #fff;
+    border: 1px solid #e8eef8;
+    border-radius: 14px;
+    min-height: 240px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.coc-way-card:hover {
+    border-color: #0052cc;
+    box-shadow: 0 12px 40px rgba(0, 82, 204, 0.1);
+    transform: translateY(-5px);
+}
+
+.coc-way-number {
+    font-size: 6rem;
+    font-weight: 900;
+    color: rgba(0, 82, 204, 0.07);
+    line-height: 1;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    font-family: 'Montserrat', sans-serif;
+    user-select: none;
+}
+
+.coc-way-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0052cc;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 2;
+}
+
+.coc-way-desc {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.7;
+    position: relative;
+    z-index: 2;
+    margin: 0;
+}
+
+/* ================================================================
+   SECTION 6: WHY CHOOSE GNOSYS
+   ================================================================ */
+.coc-why-section {
+    padding: 100px 0;
+    background: #f7f9fc;
+}
+
+.coc-why-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e8eef8;
+    transition: all 0.3s ease;
+    position: relative;
+    height: 100%;
+}
+
+.coc-why-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 45px rgba(0, 82, 204, 0.12);
+    border-color: #0052cc;
+}
+
+.coc-why-icon {
+    font-size: 2.5rem;
+    color: #0052cc;
+    margin-bottom: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.coc-why-card:hover .coc-why-icon {
+    transform: scale(1.15);
+}
+
+.coc-why-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 0.75rem;
+}
+
+.coc-why-desc {
+    font-size: 0.9rem;
+    color: #777;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+.coc-why-underline {
+    height: 3px;
+    background: linear-gradient(90deg, #0052cc, #003d99);
+    border-radius: 2px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.coc-why-card:hover .coc-why-underline {
+    opacity: 1;
+}
+
+/* ================================================================
+   SECTION 7: OUR STORY
+   ================================================================ */
+.coc-story-section {
+    padding: 100px 0;
+    background: linear-gradient(rgba(0, 18, 60, 0.92), rgba(0, 18, 60, 0.92)),
+        url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')
+        center center / cover no-repeat;
+    color: #fff;
+    position: relative;
+}
+
+.coc-story-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 1.5rem;
+}
+
+.coc-story-text {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.85;
+    max-width: 800px;
+}
+
+/* ================================================================
+   SECTION 8: MEET THE PEOPLE — Team swiper
+   ================================================================ */
+.coc-team-section {
+    padding: 100px 0;
+    background: #fff;
+}
+
+.coc-team-swiper {
+    padding-bottom: 3rem !important;
+}
+
+.coc-team-card {
+    background: #fff;
+    border: 1px solid #e8eef8;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 82, 204, 0.06);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.coc-team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 45px rgba(0, 82, 204, 0.12);
+    border-color: #0052cc;
+}
+
+.coc-team-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 1.2rem;
+    border: 3px solid #0052cc;
+}
+
+.coc-team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.coc-team-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 0.25rem;
+}
+
+.coc-team-role {
+    font-size: 0.85rem;
+    color: #0052cc;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+
+.coc-team-quote {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.7;
+    font-style: italic;
+    margin: 0;
+}
+
+.coc-swiper-pagination {
+    bottom: 0 !important;
+}
+
+.coc-swiper-pagination .swiper-pagination-bullet {
+    background: #0052cc;
+    width: 10px;
+    height: 10px;
+}
+
+/* ================================================================
+   SECTION 9: GLOBAL PRESENCE
+   ================================================================ */
+.coc-global-section {
+    padding: 100px 0;
+    background: linear-gradient(rgba(6, 12, 34, 0.93), rgba(6, 12, 34, 0.93)),
+        url('https://gnosysdigital.com/wp-content/uploads/2024/02/world-map-dots.png')
+        center center / cover no-repeat;
+    color: #fff;
+}
+
+.coc-global-badge {
+    display: inline-block;
+    background: #0052cc;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    padding: 12px 32px;
+    border-radius: 6px;
+    margin-bottom: 3rem;
+    text-transform: uppercase;
+}
+
+.coc-location-card {
+    padding: 2rem 1rem;
+}
+
+.coc-location-icon {
+    font-size: 2rem;
+    color: #fff;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.coc-location-country {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.coc-location-city {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ================================================================
+   SECTION 10: CTA
+   ================================================================ */
+.coc-cta-section {
+    padding: 100px 0;
+    background: #fff;
+}
+
+.coc-cta-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    color: #0052cc;
+    margin-bottom: 1.2rem;
+}
+
+.coc-cta-desc {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 720px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+}
+
+.coc-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 991px) {
+    .coc-hero {
+        padding-top: 140px;
+        padding-bottom: 80px;
+    }
+    .coc-mission-img {
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .coc-hero {
+        padding-top: 120px;
+    }
+    .coc-hero-title {
+        font-size: 2.2rem;
+    }
+    .coc-section-title {
+        font-size: 1.8rem;
+    }
+    .coc-way-number {
+        font-size: 4rem;
+    }
+}
