@@ -27,21 +27,56 @@
                     <div class="text-primary fw-bold mb-2 text-uppercase small">{{ $service->categoryRelationship->name }}</div>
                     @endif
                     <h1 class="display-5 fw-bold mb-3">{{ $service->title }}</h1>
-                    
+
                     <div class="price-box mb-4">
-                        <span class="fs-1 fw-bold text-dark">${{ is_numeric($service->price) ? number_format((float)$service->price, 2) : $service->price }}</span>
+                        <span class="fs-1 fw-bold text-dark">{{ $service->price_display }}</span>
                     </div>
 
-                    <div class="booking-section border p-4 rounded-3 bg-white shadow-sm mb-4">
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Packages</label>
-                            <select class="form-select form-select-lg">
-                                <option value="basic">Basic Plan</option>
-                                <option value="standard">Standard Plan</option>
-                                <option value="premium">Premium Plan</option>
-                            </select>
-                        </div>
+                    @if($service->packages && $service->packages->count() > 0)
+                    <div class="packages-tabs-wrapper border rounded-3 bg-white shadow-sm mb-4 overflow-hidden">
+                        <ul class="nav nav-tabs package-pricing-tabs border-0 bg-light d-flex" id="packagePricingTabs" role="tablist">
+                            @foreach($service->packages as $index => $package)
+                            <li class="nav-item flex-fill" role="presentation">
+                                <button class="nav-link w-100 rounded-0 border-0 fw-bold py-3 {{ $index == 0 ? 'active' : '' }}"
+                                    id="package-tab-{{ $package->id }}"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#package-content-{{ $package->id }}"
+                                    type="button" role="tab">
+                                    {{ $package->package_name }}
+                                </button>
+                            </li>
+                            @endforeach
+                        </ul>
+                        <div class="tab-content p-4" id="packagePricingTabsContent">
+                            @foreach($service->packages as $index => $package)
+                            <div class="tab-pane fade {{ $index == 0 ? 'show active' : '' }}" id="package-content-{{ $package->id }}" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0 fw-bold text-dark">{{ $package->package_name }}</h4>
+                                    <span class="fs-3 fw-bold" style="color: #004a80;">${{ is_numeric($package->price) ? number_format((float)$package->price, 2) : $package->price }}</span>
+                                </div>
+                                <div class="text-muted mb-4 text-start" style="min-height: 80px;">
+                                    {!! nl2br(e($package->description)) !!}
+                                </div>
 
+                                <div class="d-flex align-items-center gap-3 mb-4">
+                                    <div class="quantity-input" style="width: 80px;">
+                                        <input type="number" class="form-control form-control-lg text-center" value="1" min="1">
+                                    </div>
+                                    <button class="btn btn-dark btn-lg flex-grow-1 py-3 fw-bold">Select {{ $package->package_name }}</button>
+                                </div>
+
+                                <div class="payment-buttons d-grid gap-2">
+
+                                    <button class="btn border-0 py-3 fw-bold text-dark d-flex align-items-center justify-content-center" style="background-color: #ffc439;">
+                                        Pay with <span class="ms-1 fw-bolder text-primary">Pay</span><span class="fw-bolder text-info">Pal</span>
+                                    </button>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @else
+                    <div class="booking-section border p-4 rounded-3 bg-white shadow-sm mb-4">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="quantity-input" style="width: 80px;">
                                 <input type="number" class="form-control form-control-lg text-center" value="1" min="1">
@@ -50,27 +85,25 @@
                         </div>
 
                         <div class="payment-buttons d-grid gap-2">
-                            <button class="btn border-0 py-3 fw-bold text-dark d-flex align-items-center justify-content-center" style="background-color: #00e676;">
-                                Pay with <span class="ms-1 fw-bolder italic"><i class="fas fa-link me-1"></i>link</span>
-                            </button>
                             <button class="btn border-0 py-3 fw-bold text-dark d-flex align-items-center justify-content-center" style="background-color: #ffc439;">
                                 Pay with <span class="ms-1 fw-bolder text-primary">Pay</span><span class="fw-bolder text-info">Pal</span>
                             </button>
                         </div>
                     </div>
+                    @endif
 
                     <div class="product-meta mt-4 py-3 border-top small">
                         <div class="mb-1"><span class="text-muted text-uppercase fw-bold">SKU:</span> <span class="ms-1">{{ $service->service_id }}</span></div>
                         <div class="mb-1">
-                            <span class="text-muted text-uppercase fw-bold">Category:</span> 
+                            <span class="text-muted text-uppercase fw-bold">Category:</span>
                             <span class="ms-1">
                                 @if($service->categoryRelationship)
-                                    <a href="{{ route('digital-services.category', $service->categoryRelationship->slug) }}" class="text-decoration-none text-dark">{{ $service->categoryRelationship->name }}</a>
+                                <a href="{{ route('digital-services.category', $service->categoryRelationship->slug) }}" class="text-decoration-none text-dark">{{ $service->categoryRelationship->name }}</a>
                                 @endif
                             </span>
                         </div>
                         <div class="mb-3"><span class="text-muted text-uppercase fw-bold">Tag:</span> <span class="ms-1">{{ $service->subcategory ?? 'Service' }}</span></div>
-                        
+
                         <div class="share-links d-flex align-items-center gap-3 mt-3">
                             <span class="text-muted text-uppercase fw-bold">Share:</span>
                             <a href="#" class="text-dark"><i class="fab fa-x-twitter"></i></a>
@@ -200,18 +233,21 @@
         </div>
 
         <style>
-        .transition-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            border-color: #004a80 !important;
-        }
-        .step-number {
-            font-size: 5rem;
-            line-height: 1;
-            color: #004a80; /* Solid primary color */
-            opacity: 0.15; /* Subtle but visible */
-            font-weight: 900;
-        }
+            .transition-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+                border-color: #004a80 !important;
+            }
+
+            .step-number {
+                font-size: 5rem;
+                line-height: 1;
+                color: #004a80;
+                /* Solid primary color */
+                opacity: 0.15;
+                /* Subtle but visible */
+                font-weight: 900;
+            }
         </style>
     </div>
 </section>
@@ -228,7 +264,7 @@
                     <img src="{{ $related->image_url }}" class="card-img-top" alt="{{ $related->title }}" style="height: 200px; object-fit: cover;">
                     <div class="card-body p-4 text-center">
                         <h5 class="card-title fw-bold mb-2">{{ $related->title }}</h5>
-                        <p class="text-muted small mb-3">{{ $related->price ?? 'Contact for Price' }}</p>
+                        <p class="text-muted small mb-3">{{ $related->price_display }}</p>
                         <a href="{{ route('digital-services.show', $related->slug) }}" class="btn btn-outline-primary btn-sm">View Details</a>
                     </div>
                 </div>
@@ -240,20 +276,40 @@
 @endif
 
 <style>
-.service-tabs-section .nav-tabs .nav-link {
-    color: #64748b;
-    background: none;
-    border-bottom: 3px solid transparent;
-}
-.service-tabs-section .nav-tabs .nav-link.active {
-    color: var(--gnosys-blue, #004a99);
-    border-bottom-color: var(--gnosys-blue, #004a99);
-}
-.service-card-mini {
-    transition: transform 0.3s ease;
-}
-.service-card-mini:hover {
-    transform: translateY(-5px);
-}
+    .service-tabs-section .nav-tabs .nav-link {
+        color: #64748b;
+        background: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .service-tabs-section .nav-tabs .nav-link.active {
+        color: var(--gnosys-blue, #004a99);
+        border-bottom-color: var(--gnosys-blue, #004a99);
+    }
+
+    .service-card-mini {
+        transition: transform 0.3s ease;
+    }
+
+    .service-card-mini:hover {
+        transform: translateY(-5px);
+    }
+
+    .package-pricing-tabs .nav-link {
+        background-color: #e2e8f0;
+        color: #1e293b;
+        border-bottom: 3px solid transparent !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .package-pricing-tabs .nav-link:hover {
+        background-color: #cbd5e1;
+    }
+
+    .package-pricing-tabs .nav-link.active {
+        background-color: #ffffff;
+        color: #0d9488;
+        border-bottom-color: #0d9488 !important;
+    }
 </style>
 @endsection

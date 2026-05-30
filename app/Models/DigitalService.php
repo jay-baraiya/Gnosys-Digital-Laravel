@@ -25,7 +25,6 @@ class DigitalService extends Model
         'subcategory',
         'image_url',
         'features',
-        'service_id',
         'category_id',
         'is_active',
         'sort_order',
@@ -71,5 +70,45 @@ class DigitalService extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->orderBy('created_at', 'desc');
+    }
+
+    public function getPriceDisplayAttribute()
+    {
+        if ($this->packages()->exists()) {
+            $prices = $this->packages()->pluck('price')->map(function ($price) {
+                if (empty($price)) return null;
+                $cleanPrice = preg_replace('/[^\d.]/', '', $price);
+                return is_numeric($cleanPrice) ? (float)$cleanPrice : null;
+            })->filter(function ($value) {
+                return !is_null($value);
+            });
+
+            if ($prices->isNotEmpty()) {
+                $minPrice = $prices->min();
+                $maxPrice = $prices->max();
+                if ($minPrice == $maxPrice) {
+                    return '$' . ($minPrice == (int)$minPrice ? (int)$minPrice : number_format($minPrice, 2));
+                }
+                $minStr = $minPrice == (int)$minPrice ? (int)$minPrice : number_format($minPrice, 2);
+                $maxStr = $maxPrice == (int)$maxPrice ? (int)$maxPrice : number_format($maxPrice, 2);
+                return '$' . $minStr . ' - $' . $maxStr;
+            }
+        }
+
+        if ($this->price) {
+            $cleanPrice = preg_replace('/[^\d.]/', '', $this->price);
+            if (is_numeric($cleanPrice)) {
+                $p = (float)$cleanPrice;
+                return '$' . ($p == (int)$p ? (int)$p : number_format($p, 2));
+            }
+            return $this->price;
+        }
+
+        return 'Contact for Price';
+    }
+
+    public function packages()
+    {
+        return $this->hasMany(Package::class, 'digital_service_id');
     }
 }

@@ -53,7 +53,7 @@ class FrontendController extends Controller
 
         $products = $query->get();
         $categories = Category::where('type', 'product')
-            ->whereHas('products', function($q) {
+            ->whereHas('products', function ($q) {
                 $q->active();
             })->get();
 
@@ -66,7 +66,7 @@ class FrontendController extends Controller
         $products = $category->products()->active()->ordered()->get();
 
         $categories = Category::where('type', 'product')
-            ->whereHas('products', function($q) {
+            ->whereHas('products', function ($q) {
                 $q->active();
             })->get();
 
@@ -86,7 +86,7 @@ class FrontendController extends Controller
 
         $services = $query->get();
         $categories = Category::where('type', 'service')
-            ->whereHas('services', function($q) {
+            ->whereHas('services', function ($q) {
                 $q->active();
             })->get();
 
@@ -99,9 +99,13 @@ class FrontendController extends Controller
         $services = $category->services()->active()->ordered()->get();
 
         $categories = Category::where('type', 'service')
-            ->whereHas('services', function($q) {
+            ->whereHas('services', function ($q) {
                 $q->active();
             })->get();
+        echo "<pre>";
+        print_r($services);
+        echo "</pre>";
+        exit;
 
         return view('digital-services', compact('services', 'category', 'categories'));
     }
@@ -115,6 +119,8 @@ class FrontendController extends Controller
             ->where('id', '!=', $service->id)
             ->take(3)
             ->get();
+       
+    
 
         return view('digital-services.show', compact('service', 'relatedServices'));
     }
@@ -134,7 +140,7 @@ class FrontendController extends Controller
 
         $blogs = $query->latest()->paginate(9);
         $categories = Category::where('type', 'blog')
-            ->whereHas('blogs', function($q) {
+            ->whereHas('blogs', function ($q) {
                 $q->where('is_published', true);
             })
             ->get();
