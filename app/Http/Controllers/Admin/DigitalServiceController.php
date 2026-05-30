@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DigitalService;
 use App\Models\Category;
+use App\Models\Package;
 use Illuminate\Support\Str;
 
 class DigitalServiceController extends Controller
@@ -40,7 +41,7 @@ class DigitalServiceController extends Controller
         return view('admin.services.index', compact('services', 'categories'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         if (!auth('admin')->user()->hasPermission('services', 'create')) {
             return abort(403, 'Unauthorized action.');
@@ -58,8 +59,11 @@ class DigitalServiceController extends Controller
         if (!auth('admin')->user()->hasPermission('services', 'create')) {
             return abort(403, 'Unauthorized action.');
         }
-
         $request->validate([
+            'packages' => 'nullable|array',
+            'packages.*.package_name' => 'required|string|max:255',
+            'packages.*.price' => 'nullable|string|max:255',
+            'packages.*.description' => 'nullable|string',
             'title' => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'description' => 'required|string',
@@ -73,7 +77,6 @@ class DigitalServiceController extends Controller
             'subcategory' => 'nullable|string',
             'image_url' => 'required|url',
             'features' => 'nullable|array',
-            'service_id' => 'required|string|unique:digital_services,service_id',
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
             'tags' => 'nullable|array',
@@ -109,6 +112,19 @@ class DigitalServiceController extends Controller
             'visibility' => $request->boolean('visibility', true),
         ]);
 
+        if ($request->packages) {
+
+            foreach ($request->packages as $package) {
+
+                Package::create([
+                    'digital_service_id' => $service->id,
+                    'package_name' => $package['package_name'],
+                    'price' => $package['price'] ?? null,
+                    'description' => $package['description'] ?? null,
+                ]);
+            }
+        }
+
         return redirect()->route('admin.services.index')
             ->with('success', 'Digital service created successfully!');
     }
@@ -136,6 +152,10 @@ class DigitalServiceController extends Controller
         }
 
         $request->validate([
+            'packages' => 'nullable|array',
+            'packages.*.package_name' => 'required|string|max:255',
+            'packages.*.price' => 'nullable|string|max:255',
+            'packages.*.description' => 'nullable|string',
             'title' => 'required|string|max:255',
             'short_description' => 'nullable|string',
             'description' => 'required|string',
@@ -184,6 +204,21 @@ class DigitalServiceController extends Controller
             'product_data' => $request->product_data,
             'visibility' => $request->boolean('visibility', true),
         ]);
+
+        $service->packages()->delete();
+
+        if ($request->packages) {
+
+            foreach ($request->packages as $package) {
+
+                Package::create([
+                    'digital_service_id' => $service->id,
+                    'package_name' => $package['package_name'],
+                    'price' => $package['price'] ?? null,
+                    'description' => $package['description'] ?? null,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.services.index')
             ->with('success', 'Digital service updated successfully!');

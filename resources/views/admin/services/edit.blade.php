@@ -15,6 +15,75 @@
                     @csrf
                     @method('PUT')
                     <div class="row">
+                        <!-- Packages Section -->
+                        <div class="card mb-4 border shadow-sm">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Service Packages</h5>
+
+                                <button type="button"
+                                    class="btn btn-sm btn-primary"
+                                    id="add-package">
+                                    + Add Package
+                                </button>
+                            </div>
+
+                            <div class="card-body">
+                                <div id="packages-container">
+                                    @php
+                                        $oldPackages = old('packages');
+                                        $packagesToLoop = [];
+                                        if (is_array($oldPackages)) {
+                                            foreach ($oldPackages as $index => $oldPackage) {
+                                                $packagesToLoop[] = (object)[
+                                                    'package_name' => $oldPackage['package_name'] ?? '',
+                                                    'price' => $oldPackage['price'] ?? '',
+                                                    'description' => $oldPackage['description'] ?? '',
+                                                ];
+                                            }
+                                        } elseif ($service->packages && $service->packages->count() > 0) {
+                                            $packagesToLoop = $service->packages;
+                                        }
+                                    @endphp
+
+                                    @foreach($packagesToLoop as $index => $package)
+                                    <div class="border rounded p-3 mb-3 position-relative bg-light">
+                                        <button type="button"
+                                            class="btn-close position-absolute top-0 end-0 m-2 remove-package">
+                                        </button>
+
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label class="form-label">Package Name</label>
+                                                <input type="text"
+                                                    name="packages[{{ $index }}][package_name]"
+                                                    class="form-control"
+                                                    value="{{ $package->package_name }}"
+                                                    placeholder="Basic / Standard / Premium" required>
+                                            </div>
+
+                                            <div class="col-md-4 mb-3">
+                                                <label class="form-label">Price</label>
+                                                <input type="text"
+                                                    name="packages[{{ $index }}][price]"
+                                                    class="form-control"
+                                                    value="{{ $package->price }}"
+                                                    placeholder="$99">
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <label class="form-label">Description</label>
+                                                <textarea
+                                                    name="packages[{{ $index }}][description]"
+                                                    class="form-control"
+                                                    rows="3"
+                                                    placeholder="Package details">{{ $package->description }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-8">
                             <div class="mb-3">
                                 <label for="title" class="form-label">Service Title</label>
@@ -448,6 +517,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-block')) {
+            e.target.closest('.border').remove();
+        }
+    });
+
+    // Packages Logic
+    let packageIndex = {{ is_array(old('packages')) ? count(old('packages')) : ($service->packages ? $service->packages->count() : 0) }};
+
+    document.getElementById('add-package').addEventListener('click', () => {
+        const container = document.getElementById('packages-container');
+        const div = document.createElement('div');
+        div.className = 'border rounded p-3 mb-3 position-relative bg-light';
+        div.innerHTML = `
+        <button type="button"
+            class="btn-close position-absolute top-0 end-0 m-2 remove-package">
+        </button>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Package Name</label>
+                <input type="text"
+                    name="packages[${packageIndex}][package_name]"
+                    class="form-control"
+                    placeholder="Basic / Standard / Premium" required>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Price</label>
+                <input type="text"
+                    name="packages[${packageIndex}][price]"
+                    class="form-control"
+                    placeholder="$99">
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">Description</label>
+                <textarea
+                    name="packages[${packageIndex}][description]"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Package details"></textarea>
+            </div>
+        </div>
+    `;
+        container.appendChild(div);
+        packageIndex++;
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-package')) {
             e.target.closest('.border').remove();
         }
     });

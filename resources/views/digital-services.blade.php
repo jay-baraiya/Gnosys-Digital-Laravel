@@ -100,11 +100,7 @@
                                 <h2 class="text-dark mb-2" style="font-size: 1.1rem; font-weight: 600;">{{ $service->title }}</h2>
                                 <p class="text-muted small mb-2 text-start">{{ Str::limit($service->short_description ?? $service->description, 60) }}</p>
                                 <div class="text-primary fw-bold text-start" style="font-size: 1.1rem;">
-                                    @if($service->price)
-                                        ${{ is_numeric($service->price) ? number_format((float)$service->price, 2) : $service->price }}
-                                    @else
-                                        Contact for Price
-                                    @endif
+                                    {{ $service->price_display }}
                                 </div>
                             </a>
                             <div class="mt-auto">

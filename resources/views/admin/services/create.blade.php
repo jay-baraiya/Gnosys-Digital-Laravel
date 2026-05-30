@@ -11,23 +11,98 @@
                 <h5 class="mb-0 text-white">Service Details</h5>
             </div>
             <div class="card-body">
+                @if ($errors->any())
+                <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4">
+
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-exclamation-circle me-2 fs-5"></i>
+                        <h6 class="mb-0 fw-bold">
+                            Please fix the following errors:
+                        </h6>
+                    </div>
+
+                    <ul class="mb-0 ps-3">
+                        @foreach ($errors->all() as $error)
+                        <li class="mb-1">
+                            {{ $error }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
                 <form action="{{ route('admin.services.store') }}" method="POST">
                     @csrf
                     <div class="row">
+
+                        <!-- Packages Section -->
+                        <div class="card mb-4 border shadow-sm">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Service Packages</h5>
+
+                                <button type="button"
+                                    class="btn btn-sm btn-primary"
+                                    id="add-package">
+                                    + Add Package
+                                </button>
+                            </div>
+
+                            <div class="card-body">
+                                <div id="packages-container">
+                                    @if(is_array(old('packages')))
+                                        @foreach(old('packages') as $index => $oldPackage)
+                                        <div class="border rounded p-3 mb-3 position-relative bg-light">
+                                            <button type="button"
+                                                class="btn-close position-absolute top-0 end-0 m-2 remove-package">
+                                            </button>
+
+                                            <div class="row">
+                                                <div class="col-md-4 mb-3">
+                                                    <label class="form-label">Package Name</label>
+                                                    <input type="text"
+                                                        name="packages[{{ $index }}][package_name]"
+                                                        class="form-control"
+                                                        value="{{ $oldPackage['package_name'] ?? '' }}"
+                                                        placeholder="Basic / Standard / Premium" required>
+                                                </div>
+
+                                                <div class="col-md-4 mb-3">
+                                                    <label class="form-label">Price</label>
+                                                    <input type="text"
+                                                        name="packages[{{ $index }}][price]"
+                                                        class="form-control"
+                                                        value="{{ $oldPackage['price'] ?? '' }}"
+                                                        placeholder="$99">
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Description</label>
+                                                    <textarea
+                                                        name="packages[{{ $index }}][description]"
+                                                        class="form-control"
+                                                        rows="3"
+                                                        placeholder="Package details">{{ $oldPackage['description'] ?? '' }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-8">
                             <div class="mb-3">
                                 <label for="title" class="form-label">Service Title</label>
-                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
+                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}">
                                 @error('title')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="5" required>{{ old('description') }}</textarea>
+                                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="5">{{ old('description') }}</textarea>
                                 @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
@@ -59,7 +134,7 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label for="image_url" class="form-label">Main Cover Image URL</label>
-                                        <input type="url" class="form-control @error('image_url') is-invalid @enderror" id="image_url" name="image_url" value="{{ old('image_url') }}" required placeholder="https://...">
+                                        <input type="url" class="form-control @error('image_url') is-invalid @enderror" id="image_url" name="image_url" value="{{ old('image_url') }}" placeholder="https://...">
                                         <div id="image-preview" class="mt-2 text-center d-none">
                                             <img src="" class="img-thumbnail" style="max-height: 150px;">
                                         </div>
@@ -143,7 +218,7 @@
                                         <div class="mb-3 row">
                                             <label class="col-sm-3 col-form-label">SKU</label>
                                             <div class="col-sm-6">
-                                                <input type="text" name="service_id" class="form-control" required>
+                                                <input type="text" name="service_id" class="form-control">
                                             </div>
                                         </div>
                                         <div class="mb-3 row">
@@ -245,18 +320,18 @@
                         <div class="col-12">
                             <div class="mb-4">
                                 <label for="category_id" class="form-label">Category</label>
-                                <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
+                                <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id">
                                     <option value="">Select Category</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
+                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
                                     @endforeach
                                 </select>
                             </div>
-                            
+
                             <h5 class="mb-3 text-primary">Content Sections</h5>
-                            
+
                             <!-- Detailed HTML Description -->
                             <div class="mb-4">
                                 <label for="detailed_description" class="form-label">Detailed Content (HTML allowed)</label>
@@ -287,106 +362,111 @@
 </div>
 
 <style>
-#v-pills-tab .nav-link {
-    color: #555;
-    background-color: transparent;
-    border-radius: 0;
-}
-#v-pills-tab .nav-link.active {
-    color: #2271b1;
-    background-color: #fff;
-    border-right: 4px solid #2271b1 !important;
-}
-#v-pills-tab .nav-link:hover:not(.active) {
-    background-color: #f0f0f1;
-}
-#v-pills-tabContent {
-    background-color: #fff;
-}
-.form-label {
-    font-weight: 600;
-}
-.card-header h6 {
-    font-size: 14px;
-    font-weight: 700;
-}
+    #v-pills-tab .nav-link {
+        color: #555;
+        background-color: transparent;
+        border-radius: 0;
+    }
+
+    #v-pills-tab .nav-link.active {
+        color: #2271b1;
+        background-color: #fff;
+        border-right: 4px solid #2271b1 !important;
+    }
+
+    #v-pills-tab .nav-link:hover:not(.active) {
+        background-color: #f0f0f1;
+    }
+
+    #v-pills-tabContent {
+        background-color: #fff;
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .card-header h6 {
+        font-size: 14px;
+        font-weight: 700;
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Image Preview
-    const imageInput = document.getElementById('image_url');
-    const previewDiv = document.getElementById('image-preview');
-    const previewImg = previewDiv.querySelector('img');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image Preview
+        const imageInput = document.getElementById('image_url');
+        const previewDiv = document.getElementById('image-preview');
+        const previewImg = previewDiv.querySelector('img');
 
-    imageInput.addEventListener('input', function() {
-        if (this.value) {
-            previewImg.src = this.value;
-            previewDiv.classList.remove('d-none');
-        } else {
-            previewDiv.classList.add('d-none');
-        }
-    });
+        imageInput.addEventListener('input', function() {
+            if (this.value) {
+                previewImg.src = this.value;
+                previewDiv.classList.remove('d-none');
+            } else {
+                previewDiv.classList.add('d-none');
+            }
+        });
 
-    // Gallery Logic
-    let galleryIndex = 0;
-    document.getElementById('add-gallery-item').addEventListener('click', () => {
-        const container = document.getElementById('gallery-container');
-        const col = document.createElement('div');
-        col.className = 'col-6 position-relative mb-3 gallery-item';
-        col.innerHTML = `
+        // Gallery Logic
+        let galleryIndex = 0;
+        document.getElementById('add-gallery-item').addEventListener('click', () => {
+            const container = document.getElementById('gallery-container');
+            const col = document.createElement('div');
+            col.className = 'col-6 position-relative mb-3 gallery-item';
+            col.innerHTML = `
             <div class="border p-2 rounded bg-light">
                 <button type="button" class="btn-close btn-sm position-absolute top-0 end-0 m-1 remove-gallery"></button>
                 <input type="url" name="gallery[${galleryIndex}][url]" class="form-control form-control-sm mb-2" placeholder="Image URL">
                 <input type="text" name="gallery[${galleryIndex}][caption]" class="form-control form-control-sm" placeholder="Caption">
             </div>
         `;
-        container.appendChild(col);
-        galleryIndex++;
-    });
+            container.appendChild(col);
+            galleryIndex++;
+        });
 
-    // Tags Logic
-    const tagInput = document.querySelector('input[placeholder="Add tag and press enter"]');
-    const tagsContainer = document.getElementById('tags-container');
-    
-    tagInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const tag = this.value.trim();
-            if (tag) {
-                addTag(tag);
-                this.value = '';
+        // Tags Logic
+        const tagInput = document.querySelector('input[placeholder="Add tag and press enter"]');
+        const tagsContainer = document.getElementById('tags-container');
+
+        tagInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const tag = this.value.trim();
+                if (tag) {
+                    addTag(tag);
+                    this.value = '';
+                }
             }
-        }
-    });
+        });
 
-    function addTag(text) {
-        const span = document.createElement('span');
-        span.className = 'badge bg-primary d-flex align-items-center';
-        span.innerHTML = `
+        function addTag(text) {
+            const span = document.createElement('span');
+            span.className = 'badge bg-primary d-flex align-items-center';
+            span.innerHTML = `
             ${text}
             <input type="hidden" name="tags[]" value="${text}">
             <i class="fas fa-times ms-2 cursor-pointer remove-tag" style="cursor:pointer"></i>
         `;
-        tagsContainer.appendChild(span);
-    }
-
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-tag')) {
-            e.target.parentElement.remove();
+            tagsContainer.appendChild(span);
         }
-        if (e.target.classList.contains('remove-gallery')) {
-            e.target.closest('.gallery-item').remove();
-        }
-    });
 
-    // Top Blocks Logic (Keeping existing)
-    let topBlockIndex = 0;
-    document.getElementById('add-top-block').addEventListener('click', () => {
-        const container = document.getElementById('top-blocks-container');
-        const div = document.createElement('div');
-        div.className = 'border p-3 mb-3 bg-light rounded position-relative';
-        div.innerHTML = `
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-tag')) {
+                e.target.parentElement.remove();
+            }
+            if (e.target.classList.contains('remove-gallery')) {
+                e.target.closest('.gallery-item').remove();
+            }
+        });
+
+        // Top Blocks Logic (Keeping existing)
+        let topBlockIndex = 0;
+        document.getElementById('add-top-block').addEventListener('click', () => {
+            const container = document.getElementById('top-blocks-container');
+            const div = document.createElement('div');
+            div.className = 'border p-3 mb-3 bg-light rounded position-relative';
+            div.innerHTML = `
             <button type="button" class="btn-close position-absolute top-0 end-0 m-2 remove-block"></button>
             <div class="row g-2">
                 <div class="col-md-3">
@@ -400,15 +480,76 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         `;
-        container.appendChild(div);
-        topBlockIndex++;
+            container.appendChild(div);
+            topBlockIndex++;
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-block')) {
+                e.target.closest('.border').remove();
+            }
+        });
     });
 
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-block')) {
+
+    // Packages Logic
+    let packageIndex = {{ is_array(old('packages')) ? count(old('packages')) : 0 }};
+
+    document.getElementById('add-package').addEventListener('click', () => {
+
+        const container = document.getElementById('packages-container');
+
+        const div = document.createElement('div');
+
+        div.className = 'border rounded p-3 mb-3 position-relative bg-light';
+
+        div.innerHTML = `
+        <button type="button"
+            class="btn-close position-absolute top-0 end-0 m-2 remove-package">
+        </button>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Package Name</label>
+
+                <input type="text"
+                    name="packages[${packageIndex}][package_name]"
+                    class="form-control"
+                    placeholder="Basic / Standard / Premium">
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Price</label>
+
+                <input type="text"
+                    name="packages[${packageIndex}][price]"
+                    class="form-control"
+                    placeholder="$99">
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">Description</label>
+
+                <textarea
+                    name="packages[${packageIndex}][description]"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Package details"></textarea>
+            </div>
+        </div>
+    `;
+
+        container.appendChild(div);
+
+        packageIndex++;
+    });
+
+    document.addEventListener('click', function(e) {
+
+        if (e.target.classList.contains('remove-package')) {
+
             e.target.closest('.border').remove();
         }
     });
-});
 </script>
 @endsection
