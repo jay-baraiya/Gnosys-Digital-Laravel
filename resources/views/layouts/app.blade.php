@@ -857,7 +857,10 @@
                 const button = $(this);
                 const productID = button.data('product-id');
                 const productType  = $(this).data('product-type');
+                const productPackageID  = $(this).data('package-id');
+
                 // const productPrice = button.data('product-price');
+                const productQty = $(this).closest('.services-qty-section').find('input[name="service_qty"]').val() ?? 1;
 
                 const productData = button.closest('.product-card');
                 const productTitle = productData.find('.product-title').text();
@@ -872,18 +875,19 @@
                         type: 'POST',
                         data: {
                             product_id: productID,
-                            product_title: productTitle,
-                            product_img: productImg,
+                            // product_title: productTitle,
+                            // product_img: productImg,
                             product_type: productType,
+                            product_package_id: productPackageID,
                             // product_price: productPrice,
-                            product_qty: 1,
+                            product_qty: productQty,
                             _token: '{{ csrf_token() }}'
                         },
                         success: function (response) {
                             if (response.status) {
                                 if (response.cart) {
-                                    let cartCount = Object.keys(response.cart).length;
-                                    $('.cart-count-badge').html(cartCount);
+                                    // let cartCount = Object.keys(response.cart).length;
+                                    $('.cart-count-badge').html(response.cart);
                                 }
                             } else {
                                 alert(response.message);

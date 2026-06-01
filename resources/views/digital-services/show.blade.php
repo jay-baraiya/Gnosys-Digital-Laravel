@@ -58,11 +58,13 @@
                                     {!! nl2br(e($package->description)) !!}
                                 </div>
 
-                                <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="d-flex align-items-center gap-3 mb-4 services-qty-section">
                                     <div class="quantity-input" style="width: 80px;">
-                                        <input type="number" class="form-control form-control-lg text-center" value="1" min="1">
+                                        <input type="number" name="service_qty" class="form-control form-control-lg text-center" value="1" min="1">
                                     </div>
-                                    <button class="btn btn-dark btn-lg flex-grow-1 py-3 fw-bold">Select {{ $package->package_name }}</button>
+                                    <button class="btn btn-dark btn-lg flex-grow-1 py-3 fw-bold btn-add-to-cart" type="button" data-package-id="{{ encrypt($package->id) }}" data-product-id="{{ encrypt($service->id) }}" data-product-type="service">
+                                        Add to Cart
+                                    </button>
                                 </div>
 
                                 <div class="payment-buttons d-grid gap-2">
@@ -76,12 +78,14 @@
                         </div>
                     </div>
                     @else
-                    <div class="booking-section border p-4 rounded-3 bg-white shadow-sm mb-4">
+                    <div class="booking-section border p-4 rounded-3 bg-white shadow-sm mb-4 services-qty-section">
                         <div class="d-flex align-items-center gap-3 mb-4">
                             <div class="quantity-input" style="width: 80px;">
-                                <input type="number" class="form-control form-control-lg text-center" value="1" min="1">
+                                <input type="number" name="service_qty" class="form-control form-control-lg text-center" value="1" min="1">
                             </div>
-                            <button class="btn btn-dark btn-lg flex-grow-1 py-3 fw-bold">Add to cart</button>
+                            <button class="btn btn-dark btn-lg flex-grow-1 py-3 fw-bold btn-add-to-cart" type="button" data-package-id="" data-product-id="{{ encrypt($service->id) }}" data-product-type="service">
+                                Add to cart
+                            </button>
                         </div>
 
                         <div class="payment-buttons d-grid gap-2">

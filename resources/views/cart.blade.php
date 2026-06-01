@@ -105,7 +105,7 @@
             <div class="row g-4">
 
                 {{-- ── Left: Items ── --}}
-                <div class="{{ $carts->isNotEmpty() ? 'col-lg-8' : 'col-lg-12' }}">
+                <div class="{{ $carts->isNotEmpty() ? 'col-lg-8' : 'col-lg-12' }} cartItemSection">
 
                     {{-- Table header (desktop only) --}}
                     <div class="row tbl-header px-3 d-none d-md-flex mb-2">
@@ -119,7 +119,7 @@
                         {{-- ───────── ITEM 1 ───────── --}}
                         @if ($carts->isNotEmpty())
                             @foreach ($carts as $cart)
-                                <div class="cart-item-card p-3 p-md-4 mb-3" data-id="{{ encrypt($cart->product_id) }}" data-price="{{ $cart->product_price }}">
+                                <div class="cart-item-card p-3 p-md-4 mb-3" data-id="{{ encrypt($cart->product_id) }}" data-package-id="{{ encrypt($cart->package_id) }}" data-product-type="{{ $cart->product_type }}" data-price="{{ $cart->product_price }}">
                                     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
 
                                         {{-- Left side: cover + info --}}
@@ -145,7 +145,7 @@
                                                     <i class="fas fa-plus fa-xs"></i>
                                                 </button>
                                             </div>
-                                            <button type="button" class="btn-remove cart-item-remove-btn" title="Remove item" data-id="{{ encrypt($cart->product_id) }}">
+                                            <button type="button" class="btn-remove cart-item-remove-btn" title="Remove item" data-id="{{ encrypt($cart->product_id) }}" data-package-id="{{ encrypt($cart->package_id) }}">
                                                 <i class="far fa-trash-alt"></i>
                                             </button>
                                             <div class="row-total" data-raw="{{ $cart->product_price * $cart->product_qty }}">
@@ -184,7 +184,7 @@
                 </div>
 
                 {{-- ── Right: Summary ── --}}
-                <div class="{{ $carts->isNotEmpty() ? 'col-lg-4' : 'd-none' }}">
+                <div class="{{ $carts->isNotEmpty() ? 'col-lg-4' : 'd-none' }} checkoutSection">
                     <div class="summary-card">
                         <div class="summary-card-title">Cart Totals</div>
 
@@ -279,12 +279,15 @@ $(document).ready(function() {
 
     $('.cart-item-qty-plus-btn, .cart-item-qty-minus-btn').on('click', function(e) {
         e.preventDefault();
+        console.log('test');
 
         let $btn = $(this);
 
         let $card = $btn.closest('.cart-item-card');
 
         let productId = $card.data('id');
+        let packageId = $card.data('package-id');
+        let productType = $card.data('product-type');
 
         let $input = $card.find('.qty-input');
         let currentQty = parseInt($input.val()) || 1;
@@ -306,11 +309,11 @@ $(document).ready(function() {
         $card.find('.qty-btn').prop('disabled', true);
 
         typingTimer = setTimeout(function() {
-            sendCartAjax(productId, currentQty, $card);
+            sendCartAjax(productId, packageId, productType, currentQty, $card);
         }, doneTypingInterval);
     });
 
-    function sendCartAjax(productId, qty, $card) {
+    function sendCartAjax(productId, packageId, productType, qty, $card) {
 
         let unitPrice = parseFloat($card.data('price')) || 0;
 
@@ -319,6 +322,8 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 product_id: productId,
+                package_id: packageId,
+                product_type : productType,
                 quantity: qty,
             },
             success: function(response) {
@@ -350,6 +355,10 @@ $(document).ready(function() {
 
         if (grandTotal == '0' || grandTotal == '0.00') {
             $('#cartItemsList').html('<div class="container pt-5 d-flex justify-content-center align-items-center"><div class="col-12 col-md-8 col-lg-6 text-center p-5 bg-white rounded shadow-sm border"><div class="mb-4 text-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="currentColor" class="bi bi-cart-x opacity-75" viewBox="0 0 16 16"><path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793 7.354 5.646z"/><path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg></div><h2 class="fw-bold text-dark mb-3">Your Cart is Empty!</h2><p class="text-muted mb-5 px-3">Looks like you haven\'t added anything to your cart yet. Discover some amazing products and start shopping.</p><a href="{{ url('/') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-semibold">&larr; Back to Home</a></div></div>');
+
+            $('.checkoutSection').remove();
+            $('.cartItemSection').addClass('col-lg-8');
+            $('.cartItemSection').removeClass('col-lg-8');
         }
 
         $('#grandTotal').text('$' + grandTotal.toFixed(2));
@@ -361,6 +370,8 @@ $(document).ready(function() {
         let $btn = $(this);
         let $card = $btn.closest('.cart-item-card');
         let productId = $btn.data('id');
+        let packageId = $card.data('package-id');
+        let productType = $card.data('product-type');
 
         if (!confirm('Are you sure you want to remove this item from your cart?')) {
             return;
@@ -372,7 +383,9 @@ $(document).ready(function() {
             url: '{{ route('cart.remove') }}',
             type: 'POST',
             data: {
-                product_id: productId
+                product_id: productId,
+                package_id: packageId,
+                product_type : productType
             },
             success: function(response) {
                 $card.fadeOut(300, function() {

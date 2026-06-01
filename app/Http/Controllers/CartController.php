@@ -23,34 +23,26 @@ class CartController extends Controller
         $grandTotal = 0;
 
         if ($id) {
-            $carts = Cart::where('user_id', $id)->get();
-            $grandTotal = Cart::where('user_id', $id)->sum('total_amount');
+            $carts = Cart::query()->where('user_id', $id)->get();
+            $grandTotal = Cart::query()->where('user_id', $id)->sum('total_amount');
         } else {
             $sessionCarts = session()->get('cart', []);
-
             foreach ($sessionCarts as $item) {
-                $price = 0;
-
-                if ($item['type'] == 'product') {
-                    $dp = DigitalProduct::find($item['id']);
-                    $price = !empty($dp) ? $dp->price : 0;
-                } elseif ($item['type'] == 'service') {
-                    $ds = DigitalService::find($item['id']);
-                    $price = !empty($ds) ? $ds->price : 0;
-                }
 
                 $cartItem = (object) [
                     'product_id'    => $item['id'],
                     'product_title' => $item['title'],
+                    'package_id' => $item['package_id'],
+                    'package_name' => $item['package_name'],
                     'product_img'   => $item['image'],
                     'product_type'  => $item['type'],
-                    'product_price' => $price,
+                    'product_price' => $item['price'],
                     'product_qty'   => $item['qty'],
-                    'total_amount'   => $item['qty'] * $price,
+                    'total_amount'   => $item['qty'] * $item['price'],
                 ];
 
                 $carts->push($cartItem);
-                $grandTotal += ($price * $item['qty']);
+                $grandTotal += ($item['price'] * $item['qty']);
             }
         }
 
@@ -66,34 +58,28 @@ class CartController extends Controller
         $grandTotal = 0;
 
         if ($id) {
-            $carts = Cart::where('user_id', $id)->get();
-            $grandTotal = Cart::where('user_id', $id)->sum('total_amount');
+            $carts = Cart::query()->where('user_id', $id)->get();
+            $grandTotal = Cart::query()->where('user_id', $id)->sum('total_amount');
         } else {
             $sessionCarts = session()->get('cart', []);
 
+            $price = 0;
             foreach ($sessionCarts as $item) {
-                $price = 0;
-
-                if ($item['type'] == 'product') {
-                    $dp = DigitalProduct::find($item['id']);
-                    $price = !empty($dp) ? $dp->price : 0;
-                } elseif ($item['type'] == 'service') {
-                    $ds = DigitalService::find($item['id']);
-                    $price = !empty($ds) ? $ds->price : 0;
-                }
 
                 $cartItem = (object) [
                     'product_id'    => $item['id'],
                     'product_title' => $item['title'],
+                    'package_id' => $item['package_id'],
+                    'package_name' => $item['package_name'],
                     'product_img'   => $item['image'],
                     'product_type'  => $item['type'],
-                    'product_price' => $price,
+                    'product_price' => $item['price'],
                     'product_qty'   => $item['qty'],
-                    'total_amount'   => $item['qty'] * $price,
+                    'total_amount'   => $item['qty'] * $item['price'],
                 ];
 
                 $carts->push($cartItem);
-                $grandTotal += ($price * $item['qty']);
+                $grandTotal += ($item['price'] * $item['qty']);
             }
         }
 
@@ -104,11 +90,14 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required',
+            'product_type' => 'required',
             'quantity'   => 'required|integer|min:1',
         ]);
 
+        $type = $request->product_type;
         try {
             $realProductId = decrypt($request->product_id);
+            $product_package_id = decrypt($request->package_id) ?? null;
         } catch (DecryptException $e) {
             return response()->json(['error' => 'Invalid product data.'], 400);
         }
@@ -116,8 +105,11 @@ class CartController extends Controller
         $authUser = Auth::id();
 
         if ($authUser) {
-            $updated = Cart::where('user_id', $authUser)
+            $updated = Cart::query()->where('user_id', $authUser)
                 ->where('product_id', $realProductId)
+                ->when(!empty($product_package_id), function($q) use ($product_package_id) {
+                    $q->where('package_id', $product_package_id);
+                })
                 ->first();
 
             if ($updated) {
@@ -139,9 +131,11 @@ class CartController extends Controller
         } else {
             $cart = session()->get('cart', []);
 
-            if (isset($cart[$realProductId])) {
+            $cartKey = $type . '_' . $realProductId . (!empty($product_package_id) ? '_' . $product_package_id : '');
 
-                $cart[$realProductId]['qty'] = $request->quantity;
+            if (isset($cart[$cartKey])) {
+
+                $cart[$cartKey]['qty'] = $request->quantity;
 
                 session()->put('cart', $cart);
 
@@ -159,10 +153,14 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id' => 'required',
+            'product_type' => 'required',
         ]);
+
+        $type = $request->product_type;
 
         try {
             $realProductId = decrypt($request->product_id);
+            $product_package_id = decrypt($request->package_id) ?? null;
         } catch (DecryptException $e) {
             return response()->json(['error' => 'Invalid product data.'], 400);
         }
@@ -170,24 +168,31 @@ class CartController extends Controller
         $authUser = Auth::id();
 
         if ($authUser) {
-            $deleted = Cart::where('user_id', $authUser)
+            $deleted = Cart::query()->where('user_id', $authUser)
                 ->where('product_id', $realProductId)
+                ->when(!empty($product_package_id), function($q) use ($product_package_id) {
+                    $q->where('package_id', $product_package_id);
+                })
                 ->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Item removed from cart.',
-                'cart'    => Cart::where('user_id', $authUser)->count(),
-            ], 200);
+            if ($deleted) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Item removed from cart.',
+                    'cart'    => Cart::query()->where('user_id', $authUser)->count(),
+                ], 200);
+            }
 
             return response()->json(['error' => 'Item not found in cart.'], 404);
 
         } else {
             $cart = session()->get('cart', []);
 
-            if (isset($cart[$realProductId])) {
+            $cartKey = $type . '_' . $realProductId . (!empty($product_package_id) ? '_' . $product_package_id : '');
 
-                unset($cart[$realProductId]);
+            if (isset($cart[$cartKey])) {
+
+                unset($cart[$cartKey]);
 
                 session()->put('cart', $cart);
 
@@ -206,8 +211,6 @@ class CartController extends Controller
     {
         $request->validate([
             'product_id'    => 'required|string',
-            'product_title' => 'required|string|max:255',
-            'product_img'   => 'required|string',
             'product_type'  => 'required|string|max:100',
             'product_price' => 'nullable|numeric|min:0',
             'product_qty'   => 'required|integer|min:1',
@@ -215,6 +218,7 @@ class CartController extends Controller
 
         try {
             $id = decrypt($request->product_id);
+            $product_package_id = $request->filled('product_package_id') ? decrypt($request->product_package_id) : null;
         } catch (DecryptException $e) {
             return response()->json([
                 'status' => false,
@@ -222,75 +226,119 @@ class CartController extends Controller
             ], 400);
         }
 
-        $title = $request->product_title;
-        $img   = $request->product_img;
+        $packageName = null;
+        $packageID = null;
+        $title = null;
+        $img = null;
+        $price = 0;
+
         $type  = $request->product_type;
-        $reqQty = $request->product_qty;
+        $reqQty = $request->product_qty ?? 1;
         $authUser = Auth::id();
+
+        if ($type == 'product') {
+            $dp = DigitalProduct::query()->find($id);
+            $title = $dp->title ?? null;
+            $img = $dp->image_url ?? null;
+            $price = $dp->price ?? 0;
+
+        } elseif ($type == 'service') {
+            $ds = DigitalService::select(['id', 'title', 'image_url', 'price'])
+                    ->with([
+                        'packages' => function ($q) use ($product_package_id) {
+                            $q->when(!empty($product_package_id), function ($sq) use ($product_package_id) {
+                                $sq->select(['id','digital_service_id','package_name','price'])
+                                ->where('id', $product_package_id);
+                            });
+                        }
+                    ])
+                    ->find($id);
+
+            $title = $ds->title ?? null;
+            $img = $ds->image_url ?? null;
+            $price = $ds->price ?? 0;
+
+            if ($ds && $ds->packages && $ds->packages->isNotEmpty()) {
+                $package = $ds->packages->first();
+                $packageID = $package->id;
+                $packageName = $package->package_name;
+                $price = $package->price;
+            }
+        }
 
         try {
             if ($authUser) {
-
-                $price = 0;
-                if ($type == 'product') {
-                    $dp = DigitalProduct::find($id);
-                    $price = ($dp && $dp->price) ? $dp->price : 0;
-                } elseif ($type == 'service') {
-                    $ds = DigitalService::find($id);
-                    $price = ($ds && $ds->price) ? $ds->price : 0;
-                }
-
-                $existingCartItem = Cart::where('user_id', $authUser)->where('product_id', $id)->first();
+                $existingCartItem = Cart::query()->where('user_id', $authUser)
+                    ->where('product_id', $id)
+                    ->where('product_type', $type)
+                    ->when($packageID, function($q) use ($packageID) {
+                        return $q->where('package_id', $packageID);
+                    })
+                    ->first();
 
                 if ($existingCartItem) {
-                    $newQty = ($type == 'product') ? 1 : ($existingCartItem->product_qty + $reqQty);
+                    if ($existingCartItem->product_type == 'product') {
+                        $newQty = $existingCartItem->product_qty + $reqQty;
+                    } else if ($existingCartItem->product_type == 'service') {
+                        $newQty = $reqQty;
+                    }
 
                     $existingCartItem->update([
-                        'product_qty' => $newQty,
-                        'product_price' => $price
+                        'product_qty'   => $newQty,
+                        'product_price' => $price,
+                        'total_amount'  => $newQty * $price
                     ]);
                 } else {
-                    $initialQty = ($type == 'product') ? 1 : $reqQty;
+                    $initialQty = $reqQty;
 
                     Cart::create([
                         'user_id'       => $authUser,
                         'product_id'    => $id,
+                        'package_id'    => $packageID,
+                        'package_name'    => $packageName,
                         'product_title' => $title,
                         'product_img'   => $img,
                         'product_type'  => $type,
                         'product_price' => $price,
                         'product_qty'   => $initialQty,
-                        'total_amount'   => $initialQty * $price,
+                        'total_amount'  => $initialQty * $price,
                     ]);
                 }
 
-                $cart = Cart::where('user_id', $authUser)->get();
+                $cartCount = Cart::query()->where('user_id', $authUser)->count();
+
             } else {
                 $cart = session()->get('cart', []);
 
-                if (isset($cart[$id])) {
-                    $cart[$id]['qty'] = ($type == 'product') ? 1 : ($cart[$id]['qty'] + $reqQty);
+                $cartKey = $type . '_' . $id . ($packageID ? '_' . $packageID : '');
 
-                    if (empty($cart[$id]['type'])) {
-                        $cart[$id]['type'] = $type;
+                if (isset($cart[$cartKey])) {
+                    if ($cart[$cartKey]['type'] == 'product') {
+                        $cart[$cartKey]['qty'] = $cart[$cartKey]['qty'] + $reqQty;
+                    } else if ($cart[$cartKey]['type'] == 'service') {
+                        $cart[$cartKey]['qty'] = $reqQty;
                     }
                 } else {
-                    $cart[$id] = [
-                        'id'    => $id,
-                        'title' => $title,
-                        'image' => $img,
-                        'type'  => $type,
-                        'qty'   => ($type == 'product') ? 1 : $reqQty,
+                    $cart[$cartKey] = [
+                        'id'           => $id,
+                        'title'        => $title,
+                        'image'        => $img,
+                        'type'         => $type,
+                        'price'        => $price,
+                        'qty'          => $reqQty,
+                        'package_id'   => $packageID,
+                        'package_name' => $packageName,
                     ];
                 }
 
                 session()->put('cart', $cart);
+                $cartCount = count($cart);
             }
 
             return response()->json([
                 'status'  => true,
                 'message' => 'Product added to cart successfully!',
-                'cart' => $cart
+                'cart'    => $cartCount
             ]);
 
         } catch (\Exception $e) {
@@ -305,7 +353,6 @@ class CartController extends Controller
 
     public static function storeCartitems()
     {
-
         $authUser = Auth::id();
         $cartSession = session()->get('cart', []);
 
@@ -315,38 +362,62 @@ class CartController extends Controller
 
         try {
             foreach ($cartSession as $key => $item) {
-                $existingCartItem = Cart::where('user_id', $authUser)
-                                        ->where('product_id', $item['id'])
-                                        ->first();
 
+                $packageId = $item['package_id'] ?? null;
+                $packageName = $item['package_name'] ?? null;
+
+                $existingCartItem = Cart::query()->where('user_id', $authUser)
+                    ->where('product_id', $item['id'])
+                    ->where('product_type', $item['type'])
+                    ->when($packageId, function($q) use ($packageId) {
+                        $q->where('package_id', $packageId);
+                    })
+                    ->first();
+
+                $price = 0;
                 if ($item['type'] == 'product') {
-                    $dp = DigitalProduct::find($item['id']);
-                    if (!empty($dp) && !empty($dp->price)) {
-                        $price = $dp->price;
-                    }
+                    $dp = DigitalProduct::query()->find($item['id']);
+                    $price = $dp->price ?? 0;
+
                 } else if ($item['type'] == 'service') {
-                    $ds = DigitalService::find($item['id']);
-                    if (!empty($ds) && !empty($ds->price)) {
-                        $price = $ds->price;
+                    $ds = DigitalService::query()->when(!empty($packageId), function ($query) use ($packageId) {
+                            $query->with(['packages' => function ($q) use ($packageId) {
+                                $q->where('id', $packageId);
+                            }]);
+                        })
+                        ->find($item['id']);
+
+                    if ($ds) {
+                        if (!empty($packageId) && $ds->relationLoaded('packages') && $ds->packages->isNotEmpty()) {
+                            $price = $ds->packages->first()->price;
+                        } else {
+                            $price = $ds->price ?? 0;
+                        }
                     }
-                } else {
-                    $price = 0;
                 }
 
                 if (!empty($existingCartItem)) {
-                    $existingCartItem->product_qty += $item['qty'];
-                    $existingCartItem->total_amount = $item['qty'] * $price;
-                    $existingCartItem->update();
-                } else {
-                    Cart::create([
-                        'user_id' => $authUser,
-                        'product_id' => $item['id'],
-                        'product_title' => $item['title'],
-                        'product_img' => $item['image'],
-                        'product_type' => $item['type'],
+                    $newQty = $existingCartItem->product_qty + $item['qty'];
+
+                    $existingCartItem->update([
+                        'product_qty'   => $newQty,
                         'product_price' => $price,
-                        'product_qty' => $item['qty'],
-                        'total_amount' => $item['qty'] * $price,
+                        'total_amount'  => $newQty * $price
+                    ]);
+                } else {
+                    $initialQty = $item['qty'];
+
+                    Cart::create([
+                        'user_id'       => $authUser,
+                        'product_id'    => $item['id'],
+                        'package_id'    => $packageId,
+                        'package_name'  => $packageName,
+                        'product_title' => $item['title'],
+                        'product_img'   => $item['image'],
+                        'product_type'  => $item['type'],
+                        'product_price' => $price,
+                        'product_qty'   => $initialQty,
+                        'total_amount'  => $initialQty * $price,
                     ]);
                 }
             }

@@ -547,6 +547,11 @@
                                             <!-- Product 1 -->
                                             <div class="summary-product-item">
                                                 <input type="hidden" name="order_product_id[{{ $key }}]" class="order-product-id" value="{{ encrypt($cart->product_id) }}">
+
+                                                <input type="hidden" name="order_product_package_id[{{ $key }}]" class="order-product-package-id" value="{{ !empty($cart->package_id) ? encrypt($cart->package_id) : '' }}">
+
+                                                <input type="hidden" name="order_product_package_name[{{ $key }}]" class="order-product-package-name" value="{{ !empty($cart->package_name) ? $cart->package_name : '' }}">
+
                                                 <div class="summary-img-wrapper">
                                                     <img src="{{ $cart->product_img }}" alt="{{ $cart->product_title }}" srcset="{{ $cart->product_img . ' 300w' }}, {{ $cart->product_img . ' 150w' }} , {{ $cart->product_img . ' 100w' }}" sizes="80px" width="80" height="80">
                                                     <span class="summary-qty-badge">

@@ -102,10 +102,6 @@ class FrontendController extends Controller
             ->whereHas('services', function ($q) {
                 $q->active();
             })->get();
-        echo "<pre>";
-        print_r($services);
-        echo "</pre>";
-        exit;
 
         return view('digital-services', compact('services', 'category', 'categories'));
     }
@@ -119,8 +115,6 @@ class FrontendController extends Controller
             ->where('id', '!=', $service->id)
             ->take(3)
             ->get();
-       
-    
 
         return view('digital-services.show', compact('service', 'relatedServices'));
     }
