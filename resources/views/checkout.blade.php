@@ -552,6 +552,8 @@
 
                                                 <input type="hidden" name="order_product_package_name[{{ $key }}]" class="order-product-package-name" value="{{ !empty($cart->package_name) ? $cart->package_name : '' }}">
 
+                                                <input type="hidden" name="order_product_type[{{ $key }}]" class="order-product-type" value="{{ !empty($cart->product_type) ? $cart->product_type : '' }}">
+
                                                 <div class="summary-img-wrapper">
                                                     <img src="{{ $cart->product_img }}" alt="{{ $cart->product_title }}" srcset="{{ $cart->product_img . ' 300w' }}, {{ $cart->product_img . ' 150w' }} , {{ $cart->product_img . ' 100w' }}" sizes="80px" width="80" height="80">
                                                     <span class="summary-qty-badge">

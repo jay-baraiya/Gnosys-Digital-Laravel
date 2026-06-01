@@ -108,6 +108,12 @@ class OrderController extends Controller
                     } else {
                         $orderItems[$index]['package_name'] = '';
                     }
+
+                    if (!empty($request->order_product_type[$index])) {
+                        $orderItems[$index]['product_type'] = ($request->order_product_type[$index]);
+                    } else {
+                        $orderItems[$index]['product_type'] = '';
+                    }
                 }
 
                 OrderItem::insert($orderItems);
