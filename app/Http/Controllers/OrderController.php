@@ -35,7 +35,6 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $id = Auth::id();
-
         try {
             DB::beginTransaction();
 
@@ -97,12 +96,26 @@ class OrderController extends Controller
                         'created_at'    => now(),
                         'updated_at'    => now(),
                     ];
+
+                    if (!empty($request->order_product_package_id[$index])) {
+                        $orderItems[$index]['package_id'] = decrypt($request->order_product_package_id[$index]);
+                    } else {
+                        $orderItems[$index]['package_id'] = '';
+                    }
+
+                    if (!empty($request->order_product_package_name[$index])) {
+                        $orderItems[$index]['package_name'] = ($request->order_product_package_name[$index]);
+                    } else {
+                        $orderItems[$index]['package_name'] = '';
+                    }
                 }
 
                 OrderItem::insert($orderItems);
                 $pids = array_column($orderItems, 'product_id');
+                $package_ids = array_column($orderItems, 'package_id');
+
                 if ($id && $pids) {
-                    Cart::whereIn('product_id', $pids)->where('user_id', $id)->delete();
+                    Cart::query()->where('user_id', $id)->delete();
                 } else {
                     session()->forget('cart');
                 }
