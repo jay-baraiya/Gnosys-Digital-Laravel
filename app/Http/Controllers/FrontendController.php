@@ -12,6 +12,10 @@ use App\Models\Testimonial;
 use App\Models\PageContent;
 use App\Models\ProcessStep;
 use App\Models\Location;
+use App\Models\Order;
+use App\Models\User;
+use GuzzleHttp\Promise\PromisorInterface;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -202,6 +206,52 @@ class FrontendController extends Controller
     public function profile()
     {
         $user = auth()->user();
-        return view('profile', compact('user'));
+
+        $orders = Order::with([
+            'orderItems' => function($q) {
+                $q->select(['id','order_id','product_id','product_title','quantity','price','total_amount','package_name','product_type']);
+            }
+        ])
+        ->select([
+            'id','user_id','guest_email','date_time','order_number','subtotal','total_amount','status'
+        ])
+        ->where('user_id', $user->id)
+        ->get();
+
+        return view('profile', compact('user','orders'));
+    }
+
+
+    public function updateProfile(Request $request)
+    {
+        $user = User::where('id', auth()->user()->id)->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function getOrderItemList(Request $request, $order_id) {
+        try {
+            $realOrderId = decrypt($order_id);
+        } catch (DecryptException $e) {
+            return response()->json(['success' => false, 'message' => 'Invalid Order ID'], 400);
+        }
+
+        $order = Order::with('orderItems')->find($realOrderId);
+
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
+
+        $html = view('order_items_table', compact('order'))->render();
+
+        // JSON રિસ્પોન્સમાં HTML મોકલો
+        return response()->json([
+            'success' => true,
+            'html' => $html
+        ]);
     }
 }

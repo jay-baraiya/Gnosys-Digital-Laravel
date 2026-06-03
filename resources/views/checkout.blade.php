@@ -313,7 +313,9 @@
     }
 
     #billing-address-section,
-    #apartment-field-wrapper,
+    #apartment-field-wrapper {
+        /*display: none;*/
+    }
     #order-note-wrapper {
         display: none;
     }
@@ -394,54 +396,6 @@
 
                                 </div>
 
-                                <!-- Shipping Address -->
-                                <div class="checkout-card">
-                                    <h3 class="checkout-section-title d-flex align-items-center gap-2">
-                                        <i class="fas fa-shipping-fast text-primary"></i> Shipping address
-                                    </h3>
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label class="form-label-custom" for="shipping_address">Address</label>
-                                            <input type="text" id="shipping_address" name="shipping_address" class="form-control" placeholder="1664 The East Mall" value="{{ auth()->user()?->address?->shipping_address }}">
-                                            <div class="mt-2">
-                                                <span class="toggle-link-btn" id="toggleApartmentBtn">
-                                                    <i class="fas fa-plus-circle me-1"></i> Add apartment, suite, etc.
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="col-12" id="apartment-field-wrapper">
-                                            <label class="form-label-custom" for="shipping_apartment">Apartment, suite, etc. (optional)</label>
-                                            <input type="text" id="shipping_apartment" name="shipping_apartment" class="form-control" placeholder="Suite 225" value="{{ auth()->user()?->address?->shipping_apartment }}">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label-custom" for="shipping_country">Country/Region</label>
-                                            <select id="shipping_country" name="shipping_country" class="form-select">
-                                                <option value="">Select country</option>
-                                                @if ($countrys)
-                                                    @foreach ($countrys as $country)
-                                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label-custom" for="shipping_province">Province</label>
-                                            <select id="shipping_province" name="shipping_province" class="form-select" >
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label-custom" for="shipping_city">City</label>
-                                            <input type="text" id="shipping_city" name="shipping_city" class="form-control" placeholder="" value="{{ auth()->user()?->address?->shipping_city }}">
-                                        </div>
-                                        <div class="col-12 mt-2">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="use_same_address_for_billing" name="use_same_address_for_billing" value="1" checked style="cursor:pointer;">
-                                                <label class="form-check-label fw-semibold" for="use_same_address_for_billing" style="cursor:pointer;">Use same address for billing</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!-- Billing Address (hidden by default) -->
                                 <div class="checkout-card" id="billing-address-section">
                                     <h3 class="checkout-section-title d-flex align-items-center gap-2">
@@ -478,20 +432,6 @@
                                             <label class="form-label-custom" for="billing_city">City</label>
                                             <input type="text" id="billing_city" name="billing_city" class="form-control" placeholder="" value="{{ auth()->user()?->address?->billing_city }}">
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Shipping Options -->
-                                <div class="checkout-card">
-                                    <h3 class="checkout-section-title d-flex align-items-center gap-2">
-                                        <i class="fas fa-truck text-primary"></i> Shipping options
-                                    </h3>
-                                    <div class="option-select-box active d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <input class="form-check-input m-0" type="radio" name="shipping_option" id="ship_free" checked style="width:20px;height:20px;">
-                                            <label class="fw-bold mb-0" for="ship_free" style="cursor:pointer;">Free shipping</label>
-                                        </div>
-                                        <span class="fw-bold text-success">FREE</span>
                                     </div>
                                 </div>
 
@@ -552,6 +492,8 @@
 
                                                 <input type="hidden" name="order_product_package_name[{{ $key }}]" class="order-product-package-name" value="{{ !empty($cart->package_name) ? $cart->package_name : '' }}">
 
+                                                <input type="hidden" name="order_product_type[{{ $key }}]" class="order-product-type" value="{{ !empty($cart->product_type) ? $cart->product_type : '' }}">
+
                                                 <div class="summary-img-wrapper">
                                                     <img src="{{ $cart->product_img }}" alt="{{ $cart->product_title }}" srcset="{{ $cart->product_img . ' 300w' }}, {{ $cart->product_img . ' 150w' }} , {{ $cart->product_img . ' 100w' }}" sizes="80px" width="80" height="80">
                                                     <span class="summary-qty-badge">
@@ -580,21 +522,6 @@
 
                                 </div>
 
-                                <!-- Coupon Drawer -->
-                                <div>
-                                    <button type="button" class="checkout-coupon-toggle" id="checkoutCouponBtn">
-                                        <span><i class="fas fa-ticket-alt me-2 text-primary"></i> Add coupons</span>
-                                        <i class="fas fa-chevron-down"></i>
-                                    </button>
-                                    <div id="checkoutCouponDrawer" style="display:none;padding:15px 0;border-bottom:1px solid var(--g-border);">
-                                        <div class="d-flex gap-2">
-                                            <input type="text" class="form-control" id="checkoutCouponInput" placeholder="Coupon code" style="border-radius:8px;font-size:.85rem;">
-                                            <button type="button" class="btn btn-primary px-3" id="btnApplyCheckoutCoupon" style="border-radius:8px;font-weight:600;font-size:.8rem;">Apply</button>
-                                        </div>
-                                        <div id="checkoutCouponMsg" style="font-size:.75rem;"></div>
-                                    </div>
-                                </div>
-
                                 <!-- Cost breakdown -->
                                 <div class="checkout-cost-row mt-3">
                                     <span class="text-muted fw-semibold">Subtotal</span>
@@ -603,10 +530,6 @@
                                 <div class="checkout-cost-row" id="checkout-discount-row" style="display:none!important;">
                                     <span class="text-muted fw-semibold">Discount (<span id="checkout-discount-percent">0</span>%)</span>
                                     <span class="fw-bold text-danger" id="checkout-discount-val">-$0.00</span>
-                                </div>
-                                <div class="checkout-cost-row pb-2">
-                                    <span class="text-muted fw-semibold">Free shipping</span>
-                                    <span class="fw-bold text-success text-uppercase" style="font-size:.8rem;">Free</span>
                                 </div>
                                 <div class="checkout-cost-total">
                                     <span class="checkout-total-label">Estimated total</span>
@@ -658,57 +581,6 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-
-        $('#shipping_country').select2();
-        $('#shipping_province').select2();
-
-        var shippingCountryID =  '{{ auth()->user()?->address?->shipping_country }}';
-        var shippingProvinceID =  '{{ auth()->user()?->address?->shipping_province }}';
-
-        $('#shipping_country').on('change', function() {
-
-            var countryId = $(this).val();
-            var shippingProvinceDropdown = $('#shipping_province');
-
-            shippingProvinceDropdown.empty().append('<option value="" selected disabled>Loading...</option>');
-
-            shippingProvinceDropdown.trigger('change');
-
-            if(countryId) {
-                $.ajax({
-                    url: '{{ route('get.states') }}',
-                    type: 'POST',
-                    data: {
-                        id: countryId
-                    },
-                    success: function(response) {
-                        shippingProvinceDropdown.empty();
-                        shippingProvinceDropdown.append('<option value="" selected disabled>Select Province/State</option>');
-
-                        if(response.status === 'success') {
-                            $.each(response.states, function(key, state) {
-                                var selected = shippingProvinceID == state.id ? 'selected' : '';
-                                shippingProvinceDropdown.append('<option value="' + state.id + '" data-id="' + state.id + '" '+selected+' >' + state.name + '</option>');
-                            });
-                        }
-
-                        shippingProvinceDropdown.trigger('change');
-                    },
-                    error: function() {
-                        alert('Could not fetch states. Please try again.');
-                        shippingProvinceDropdown.empty().append('<option value="" selected disabled>Error loading states</option>');
-                        shippingProvinceDropdown.trigger('change');
-                    }
-                });
-            } else {
-                shippingProvinceDropdown.empty().append('<option value="" selected disabled>Select Country First</option>');
-                shippingProvinceDropdown.trigger('change');
-            }
-        });
-
-        if (shippingCountryID && shippingProvinceID) {
-            $('#shipping_country').val(shippingCountryID).trigger('change');
-        }
 
         $('#billing_country').select2();
         $('#billing_province').select2();
@@ -764,15 +636,15 @@
             $('#apartment-field-wrapper').slideDown(300);
             $(this).parent().fadeOut(200);
         });
-        $('#use_same_address_for_billing').on('change', function() {
-            if ($(this).is(':checked')) {
-                $('#billing-address-section').slideUp(300);
-                $('#billing-address-section').find('input,select').prop('', false);
-            } else {
-                $('#billing-address-section').slideDown(300);
-                $('#billing_firstname,#billing_lastname,#billing_address,#billing_city,#billing_postalcode').prop('', true);
-            }
-        });
+        // $('#use_same_address_for_billing').on('change', function() {
+        //     if ($(this).is(':checked')) {
+        //         $('#billing-address-section').slideUp(300);
+        //         $('#billing-address-section').find('input,select').prop('', false);
+        //     } else {
+        //         $('#billing-address-section').slideDown(300);
+        //         $('#billing_firstname,#billing_lastname,#billing_address,#billing_city,#billing_postalcode').prop('', true);
+        //     }
+        // });
         $('#add_order_note').on('change', function() {
             $('#order-note-wrapper').slideToggle(300);
         });
@@ -791,25 +663,22 @@
             new bootstrap.Modal(document.getElementById('orderSuccessModal')).show();
         });
 
-        // Toggle Billing Address Section visibility based on checkbox status
-        $('#use_same_address_for_billing').on('change', function() {
-            if ($(this).is(':checked')) {
-                $('#billing-address-section').slideUp();
-                // Clear any lingering billing validation errors when hidden
-                validator.resetForm();
-            } else {
-                $('#billing-address-section').slideDown();
-            }
-        });
+        // // Toggle Billing Address Section visibility based on checkbox status
+        // $('#use_same_address_for_billing').on('change', function() {
+        //     if ($(this).is(':checked')) {
+        //         $('#billing-address-section').slideUp();
+        //         // Clear any lingering billing validation errors when hidden
+        //         validator.resetForm();
+        //     } else {
+        //         $('#billing-address-section').slideDown();
+        //     }
+        // });
 
         var validator = $("#checkoutForm").validate({
             rules: {
                 email: {
                     required : true,
                     email: true
-                },
-                shipping_country: {
-                    required : true
                 },
                 first_name: {
                     required : true,
@@ -819,45 +688,17 @@
                     required : false,
                     minlength: 2
                 },
-                shipping_address: {
-                    required : true
-                },
-                shipping_city: {
-                    required : true
-                },
-                shipping_province: {
-                    required : true
-                },
-                shipping_postal_code: {
-                    required : true
-                },
                 billing_country: {
-                    required : {
-                        depends: function(element) {
-                            return !$("#use_same_address_for_billing").is(":checked");
-                        }
-                    }
+                    required : true
                 },
                 billing_address: {
-                    required : {
-                        depends: function(element) {
-                            return !$("#use_same_address_for_billing").is(":checked");
-                        }
-                    }
+                    required : true
                 },
                 billing_city: {
-                    required : {
-                        depends: function(element) {
-                            return !$("#use_same_address_for_billing").is(":checked");
-                        }
-                    }
+                    required : true
                 },
                 billing_province: {
-                    required : {
-                        depends: function(element) {
-                            return !$("#use_same_address_for_billing").is(":checked");
-                        }
-                    }
+                    required : true
                 },
             },
             messages: {
@@ -867,10 +708,6 @@
                 },
                 first_name: "first name is required.",
                 last_name: "last name is required.",
-                shipping_address: "Shipping address is required.",
-                shipping_city: "Shipping city is required.",
-                shipping_province: "Shipping province is required.",
-                shipping_country: "Please select a shipping country",
 
                 billing_address: "Billing address is required.",
                 billing_city: "Billing city is required.",

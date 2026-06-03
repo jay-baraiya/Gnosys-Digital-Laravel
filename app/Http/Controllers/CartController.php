@@ -105,8 +105,10 @@ class CartController extends Controller
         $authUser = Auth::id();
 
         if ($authUser) {
-            $updated = Cart::query()->where('user_id', $authUser)
+            $updated = Cart::query()
+                ->where('user_id', $authUser)
                 ->where('product_id', $realProductId)
+                ->where('product_type', $type)
                 ->when(!empty($product_package_id), function($q) use ($product_package_id) {
                     $q->where('package_id', $product_package_id);
                 })
@@ -301,7 +303,7 @@ class CartController extends Controller
                         'product_type'  => $type,
                         'product_price' => $price,
                         'product_qty'   => $initialQty,
-                        'total_amount'  => $initialQty * $price,
+                        'total_amount'  => $initialQty * $price
                     ]);
                 }
 
