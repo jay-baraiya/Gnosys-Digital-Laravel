@@ -230,6 +230,9 @@
                 <a href="{{ route('admin.products.create') }}" class="nav-link">
                     <i class="fas fa-plus"></i> Add Product
                 </a>
+                <a href="{{ route('admin.custom.fields.create') }}" class="nav-link">
+                    <i class="fas fa-plus"></i> Add Custom Field
+                </a>
 
                 <div class="nav-divider"></div>
 
@@ -342,6 +345,13 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        });
         // Mobile sidebar toggle
         document.getElementById('sidebarToggle')?.addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('show');

@@ -188,33 +188,6 @@
                     <div class="summary-card">
                         <div class="summary-card-title">Cart Totals</div>
 
-                        {{-- Coupon accordion --}}
-                        <div>
-                            <button type="button" class="coupon-toggle" id="couponToggle">
-                                <span><i class="fas fa-ticket-alt me-2 text-primary"></i>Add Coupon</span>
-                                <i class="fas fa-chevron-down chev"></i>
-                            </button>
-                            <div class="coupon-drawer" id="couponDrawer">
-                                <div class="input-group mt-2" style="border-radius:8px;overflow:hidden;">
-                                    <input type="text" class="form-control" id="couponInput" placeholder="Enter coupon code" style="border-radius:8px 0 0 8px; font-size:0.875rem;">
-                                    <button type="button" class="btn btn-primary px-3 fw-semibold" id="btnApplyCoupon" style="border-radius:0 8px 8px 0; font-size:0.85rem;">Apply</button>
-                                </div>
-                                <div class="coupon-msg" id="couponMsg"></div>
-                            </div>
-                        </div>
-
-                        {{-- Shipping --}}
-                        <div class="sum-row">
-                            <span class="text-muted fw-semibold">Shipping</span>
-                            <span class="fw-bold text-success" style="font-size:0.8rem;letter-spacing:0.5px;">FREE</span>
-                        </div>
-
-                        {{-- Discount (hidden by default) --}}
-                        <div class="sum-row discount-row" id="discountRow">
-                            <span class="text-muted fw-semibold">Discount (<span id="discountPct">0</span>%)</span>
-                            <span class="fw-bold text-danger" id="discountVal">-$0.00</span>
-                        </div>
-
                         {{-- Grand total --}}
                         <div class="total-row">
                             <span class="total-label">Estimated total</span>

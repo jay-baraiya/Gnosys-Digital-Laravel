@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CustomFieldController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\FrontendController;
@@ -110,7 +111,9 @@ Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 Route::post('/contact', [FrontendController::class, 'contactStore'])->name('contact.store');
 
 // User Profile (authenticated)
-Route::middleware('auth')->get('/profile', [FrontendController::class, 'profile'])->name('profile');
+Route::get('/profile', [FrontendController::class, 'profile'])->middleware('auth')->name('profile');
+Route::post('/profile/update', [FrontendController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
+Route::get('/profile/order-item-list/{order_id}', [FrontendController::class, 'getOrderItemList'])->middleware('auth')->name('order.item.list');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -164,5 +167,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('page-contents', App\Http\Controllers\Admin\PageContentController::class);
         Route::resource('process-steps', App\Http\Controllers\Admin\ProcessStepController::class);
         Route::resource('locations', App\Http\Controllers\Admin\LocationController::class);
+
+        // Custom Fields
+        Route::resource('custom-fields', CustomFieldController::class)->names('custom.fields');
+        Route::post('custom-fields/get-field-type-data', [CustomFieldController::class, 'getFieldTypeData'])->name('custom.fields.getFieldTypeData');
+
     });
 });

@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             DigitalProductSeeder::class,
             DigitalServiceSeeder::class,
             SiteContentSeeder::class,
-            CountryStatsSeeder::class
+            CountryStatsSeeder::class,
+            CustomFieldTypeSeeder::class
         ]);
     }
 }

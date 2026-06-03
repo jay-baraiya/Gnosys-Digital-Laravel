@@ -6,6 +6,7 @@ use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -41,25 +42,15 @@ class OrderController extends Controller
             $isSameAddress = $request->has('use_same_address_for_billing') && $request->use_same_address_for_billing == 1;
 
             $commonAddressData = [
-                'shipping_first_name'  => $request->first_name,
-                'shipping_last_name'   => $request->last_name,
-                'shipping_address'     => $request->shipping_address,
-                'shipping_apartment'   => $request->shipping_apartment,
-                'shipping_city'        => $request->shipping_city,
-                'shipping_province'    => $request->shipping_province,
-                'shipping_postal_code' => $request->shipping_postal_code,
-                'shipping_country'     => $request->shipping_country,
-                'shipping_phone'       => $request->phone,
-
-                'billing_first_name'   => $isSameAddress ? $request->first_name : $request->billing_firstname,
-                'billing_last_name'    => $isSameAddress ? $request->last_name : $request->billing_lastname,
-                'billing_address'      => $isSameAddress ? $request->shipping_address : $request->billing_address,
-                'billing_apartment'    => $isSameAddress ? $request->shipping_apartment : $request->billing_apartment,
-                'billing_city'         => $isSameAddress ? $request->shipping_city : $request->billing_city,
-                'billing_province'     => $isSameAddress ? $request->shipping_province : $request->billing_province,
-                'billing_postal_code'  => $isSameAddress ? $request->shipping_postal_code : $request->billing_postalcode,
-                'billing_country'      => $isSameAddress ? $request->shipping_country : $request->billing_country,
-                'billing_phone'        => $isSameAddress ? $request->phone : $request->billing_phone,
+                'billing_first_name'   => $request->first_name,
+                'billing_last_name'    => $request->last_name,
+                'billing_address'      => $request->billing_address,
+                'billing_apartment'    => $request->billing_apartment,
+                'billing_city'         => $request->billing_city,
+                'billing_province'     => $request->billing_province,
+                'billing_postal_code'  => $request->billing_postalcode,
+                'billing_country'      => $request->billing_country,
+                'billing_phone'        => $request->phone,
             ];
 
             $order = Order::create([
@@ -70,6 +61,7 @@ class OrderController extends Controller
                 'total_amount'         => $request->order_product_grand_total,
                 'status'               => 'pending',
                 'payment_status'       => 'pending',
+                'date_time'            => Carbon::now(),
                 ...$commonAddressData
             ]);
 
